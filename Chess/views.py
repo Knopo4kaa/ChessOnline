@@ -10,6 +10,15 @@ import datetime
 from .models import User
 
 # Create your views here.
+def index(request):
+    c={}
+    if request.user.is_authenticated():
+        c['user'] = True
+    return HttpResponse(render_to_string('index.html', c))
+
+
+
+
 def registration(request):
     c = {}
     validation = {}
@@ -87,8 +96,13 @@ def log(request):
                 return redirect('/')
         except BaseException:
             c['main_error'] = True
-            c['Error'] = 'This user is not exist'
+            c['Error'] = 'This user does not exist'
             return HttpResponse(render_to_string('registration.html', c))
+
+def logout_view(request):
+    logout(request)
+    return redirect('/')
+
 
 
 
