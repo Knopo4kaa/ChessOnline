@@ -54,3 +54,44 @@ def createuser(request):
 
             return redirect('/registration')
     return redirect('/registration')
+
+def login_page(request):
+    c = {}
+    validation = {}
+    validation.update(csrf(request))
+    c = RequestContext(request, validation)
+    if request.user.is_authenticated():
+        c['user'] = True
+    return HttpResponse(render_to_string('login.html', c))
+
+
+
+def log(request):
+    c={}
+    validation = {}
+    validation.update(csrf(request))
+    c = RequestContext(request, validation)
+    if request.method == 'POST':
+        password = request.POST['password']
+        username = request.POST['username']
+        try:
+            user_model=User.objects.get(username=username)
+            if not user_model.is_active:
+                c['main_error'] = True
+                c['Error'] = 'This user is not active'
+                return HttpResponse(render_to_string('registration.html', c))
+            user = authenticate(username=username, password=password)
+            c['main_error']=False
+            if user is not None:
+                login(request, user)
+                return redirect('/')
+        except BaseException:
+            c['main_error'] = True
+            c['Error'] = 'This user is not exist'
+            return HttpResponse(render_to_string('registration.html', c))
+
+
+
+
+
+
